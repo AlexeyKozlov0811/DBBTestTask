@@ -26,4 +26,5 @@ jobs:
       - name: Install Dependencies
         run: pip install pipenv | pipenv install -d
 
-      - name: pytest -v | pytest --cov=app --cov-fail-under=90
+      - name: Run App Tests
+        run: pytest -v | pytest --cov=app --cov-fail-under=90
