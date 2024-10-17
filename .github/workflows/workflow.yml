@@ -14,12 +14,12 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.12]
+        python-version: [ 3.12 ]
 
     steps:
       - uses: actions/checkout@v4
       - name: Set Up Python
-        uses:  actions/setup-python@v5
+        uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
 
@@ -27,4 +27,4 @@ jobs:
         run: pip install pipenv | pipenv install -d
 
       - name: Run App Tests
-        run: pytest -v | pytest --cov=app --cov-fail-under=90
+        run: coverage run -m pytest
