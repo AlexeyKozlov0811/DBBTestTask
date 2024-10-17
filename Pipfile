@@ -3,12 +3,15 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[requires]
+python_version = "3.12"
+
 [packages]
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 
 [dev-packages]
+ruff = "*"
+pre-commit = "*"
+pytest = "*"
 
-[requires]
-python_version = "3.12"
-python_full_version = "3.12.5"
