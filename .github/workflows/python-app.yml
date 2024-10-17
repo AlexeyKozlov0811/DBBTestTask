@@ -43,8 +43,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Pre Commit Checks
-      uses: pre-commit/action@3.0.1
+    - name: Run pre commit
+      uses: pre-commit-ci/lite-action@v1.1.0
+      if: always()
 
     - name: Test with pytest
       run: |
