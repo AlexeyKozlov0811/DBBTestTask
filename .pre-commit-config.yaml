@@ -3,7 +3,6 @@
 default_language_version:
   python: python3.12
 
-exclude: '^(node_modules/|jest/|react_pages/|gvlp_theme/|^js/|^static/)'
 default_stages: [ commit ]
 fail_fast: true
 

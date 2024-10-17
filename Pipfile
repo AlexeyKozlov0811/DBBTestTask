@@ -8,10 +8,11 @@ python_version = "3.12"
 
 [packages]
 fastapi = "*"
-uvicorn = {extras = ["standard"], version = "*"}
+uvicorn = { extras = ["standard"], version = "*" }
+sqlmodel = "*"
 
 [dev-packages]
 ruff = "*"
 pre-commit = "*"
 pytest = "*"
-
+httpx = "*"
