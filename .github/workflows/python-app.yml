@@ -29,20 +29,24 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
-          cache: 'pipenv'
-          cache-dependency-path: Pipfile.lock
+
+      - name: Cache pipenv system dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pipenv-system-${{ hashFiles('Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv-system-
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pipenv
-          pipenv install -d
+          pipenv install -d --system
 
       - name: Run pre commit
         uses: pre-commit-ci/lite-action@v1.1.0
         if: always()
 
       - name: Test with pytest
-        run: |
-          pip install coverage pytest
-          coverage run -m pytest
+        run: coverage run -m pytest
