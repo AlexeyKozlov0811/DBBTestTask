@@ -43,4 +43,6 @@ jobs:
         if: always()
 
       - name: Test with pytest
-        run: coverage run -m pytest
+        run: |
+          pip install coverage
+          coverage run -m pytest
