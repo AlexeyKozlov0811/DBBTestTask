@@ -40,6 +40,10 @@ select = [
 ]
 
 ignore = [
+    "S101", # assert usage
+    "S105", # don't search hardcoded passwords in tests
+    "S106", # don't search hardcoded passwords in tests
+    "S107", # don't search hardcoded passwords in tests
     "E501", # line too long, handled by black
     "B008", # do not perform function calls in argument defaults
     "D202", # no-blank-line-after-function
