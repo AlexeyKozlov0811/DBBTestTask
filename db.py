@@ -9,6 +9,11 @@ engine = create_engine(sqlite_url, connect_args=connect_args)
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
+# def init_db():
+#     with engine.begin() as connection:
+#         connection.run(SQLModel.metadata.create_all)
+#         SQLModel.metadata.create_all(engine)
+
 # Dependency to get a session
 def get_session():
     with Session(engine) as session:

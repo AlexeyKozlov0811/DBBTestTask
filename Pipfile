@@ -15,7 +15,7 @@ pyjwt = "*"
 python-dotenv = "*"
 passlib = { extras = ["bcrypt"], version = "*" }
 pydantic = { extras = ["email"], version = "*" }
-dotenv = "*"
+alembic = "*"
 
 [dev-packages]
 ruff = "*"
