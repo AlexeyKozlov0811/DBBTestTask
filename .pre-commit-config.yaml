@@ -3,23 +3,24 @@
 default_language_version:
   python: python3.12
 
-default_stages: [ commit ]
+exclude: '.github'
+default_stages: [ pre-commit ]
 fail_fast: true
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
+      - id: check-toml
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-case-conflict
       - id: check-json
       - id: check-merge-conflict
       - id: check-added-large-files
-      - id: check-toml
         args:
-          - --autofix
-          - --indent
+          - autofix
+          - indent
           - "2"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
