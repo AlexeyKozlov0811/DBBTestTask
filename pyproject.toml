@@ -14,6 +14,7 @@ repository = "https://github.com/AlexeyKozlov0811/DBBTestTask"
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
+include = ["*.py", "*.toml"]
 exclude = [
     ".git",
     ".ruff_cache",
@@ -55,9 +56,6 @@ ignore = [
 fixable = ["ALL"]
 # Avoid trying to fix flake8-bugbear (`B`) violations.
 unfixable = ["B"]
-
-[tool.ruff]
-include = ["*.py", "*.toml"]
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
