@@ -45,8 +45,7 @@ jobs:
           pipenv install -d --system
 
       - name: Run pre commit
-        uses: pre-commit-ci/lite-action@v1.1.0
-        if: always()
+        run: pre-commit run --all-files
 
       - name: Test with pytest
         run: coverage run -m pytest
