@@ -1,22 +1,18 @@
 """init
 
 Revision ID: 0b7f99b782b6
-Revises: 
+Revises:
 Create Date: 2024-10-20 18:43:13.127123
 
 """
-from typing import Sequence, Union
 
-from alembic import op
-import sqlalchemy as sa
-import sqlmodel # added
-
+from collections.abc import Sequence
 
 # revision identifiers, used by Alembic.
-revision: str = '0b7f99b782b6'
-down_revision: Union[str, None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision: str = "0b7f99b782b6"
+down_revision: str | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

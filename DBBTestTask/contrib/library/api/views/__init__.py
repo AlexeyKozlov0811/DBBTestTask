@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from DBBTestTask.contrib.library.api.views import author, book, genre, publisher
 
-router = APIRouter(prefix='/library')
+router = APIRouter(prefix="/library")
 
 router.include_router(book.router)
 router.include_router(author.router)

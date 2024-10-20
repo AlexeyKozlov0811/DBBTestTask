@@ -76,6 +76,7 @@ class BookRead(BookBase):
     publisher: Publisher | None = None
     author: Author | None = None
 
+
 class BookBorrowCreate(BookBorrowBase):
     date_borrowed: date
     date_to_return: date

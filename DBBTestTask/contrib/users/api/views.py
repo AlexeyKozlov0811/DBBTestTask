@@ -14,11 +14,13 @@ from DBBTestTask.contrib.users.auth import (
 )
 from DBBTestTask.contrib.users.models import Token, User, UserCreate, UserData
 
-router = APIRouter(prefix='/users', tags=['Users'])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.post("/login", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)
+):
     # TODO: Fix deprecated queries
     db_user = session.query(User).filter(User.username == form_data.username).first()
     if db_user is None or not verify_password(form_data.password, db_user.hashed_password):
@@ -30,10 +32,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Sessi
 
 
 @router.post("/register/", status_code=HTTP_201_CREATED)
-async def register_user(
-    user: UserCreate, session: Session = Depends(get_session)
-):
-    existing_user = session.query(User).filter(or_(User.username == user.username,User.email == user.email)).first()
+async def register_user(user: UserCreate, session: Session = Depends(get_session)):
+    existing_user = (
+        session.query(User)
+        .filter(or_(User.username == user.username, User.email == user.email))
+        .first()
+    )
     if existing_user:
         raise HTTPException(status_code=400, detail="Username or Email already registered")
 

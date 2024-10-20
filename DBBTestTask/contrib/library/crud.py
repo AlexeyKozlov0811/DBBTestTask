@@ -1,6 +1,6 @@
 """
-    Table param represents DB Table class
-    Other SQLModel typed params are data schemas
+Table param represents DB Table class
+Other SQLModel typed params are data schemas
 """
 
 from fastapi import Depends, HTTPException
@@ -30,12 +30,19 @@ class ModelCRUD:
         return obj
 
     @classmethod
-    def read_objects(cls: type(SQLModel), offset: int = 0, limit: int = 20, session: Session = Depends(get_session)):
+    def read_objects(
+        cls: type(SQLModel),
+        offset: int = 0,
+        limit: int = 20,
+        session: Session = Depends(get_session),
+    ):
         list_of_objects = session.exec(select(cls).offset(offset).limit(limit)).all()
         return list_of_objects
 
     @classmethod
-    def update_obj(cls: type(SQLModel), obj_id: int, data: SQLModel, session: Session = Depends(get_session)):
+    def update_obj(
+        cls: type(SQLModel), obj_id: int, data: SQLModel, session: Session = Depends(get_session)
+    ):
         obj_to_update = cls.get_obj_or_404(obj_id, cls, session)
 
         obj_data = data.model_dump(exclude_unset=True)

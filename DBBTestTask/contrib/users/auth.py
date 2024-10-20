@@ -13,11 +13,14 @@ from DBBTestTask.contrib.users.models import User
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/users/login")
 
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
 
 def decode_token(token: str):
     try:
@@ -30,7 +33,7 @@ def decode_token(token: str):
 
 
 # Create JWT access token
-def create_access_token(data: dict, expires_delta: timedelta| None = None) -> str:
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now() + expires_delta
@@ -42,9 +45,7 @@ def create_access_token(data: dict, expires_delta: timedelta| None = None) -> st
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
-    credentials_exception = HTTPException(
-        status_code=401, detail="Could not validate credentials"
-    )
+    credentials_exception = HTTPException(status_code=401, detail="Could not validate credentials")
 
     # Decode the token and get the username (sub)
     payload = decode_token(token)
@@ -58,4 +59,3 @@ def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Dep
         raise credentials_exception
 
     return user
-
