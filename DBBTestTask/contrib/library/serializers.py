@@ -5,6 +5,7 @@ from DBBTestTask.contrib.library.models import (
     AuthorBase,
     Book,
     BookBase,
+    BookBorrowBase,
     Genre,
     GenreBase,
     Publisher,
@@ -53,7 +54,7 @@ class AuthorRead(AuthorUpdate):
 
 
 class BookCreate(BookBase):
-    pass
+    in_stock: bool | None = True
 
 
 class BookUpdate(BookBase):
@@ -67,9 +68,21 @@ class BookUpdate(BookBase):
 
 class BookRead(BookBase):
     id: int
+    in_stock: bool
     name: str | None = None
     ISBN: str | None = None
     publish_date: date | None = None
     genre: Genre | None = None
     publisher: Publisher | None = None
     author: Author | None = None
+
+class BookBorrowCreate(BookBorrowBase):
+    date_borrowed: date
+    date_to_return: date
+    date_returned: date | None = None
+    book_id: int
+    user_id: int
+
+
+class BookBorrowRead(BookBorrowCreate):
+    pass

@@ -1,3 +1,4 @@
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
@@ -9,7 +10,7 @@ from DBBTestTask.contrib.users.models import User
 from main import app
 
 
-@pytest.fixture(name="session",scope='session', autouse=True)
+@pytest.fixture(name="session")
 def session_fixture() -> Session:
     engine = create_engine(
         "sqlite://",
@@ -20,7 +21,7 @@ def session_fixture() -> Session:
     with Session(engine) as session:
         yield session
 
-@pytest.fixture(name="client",scope='session', autouse=True)
+@pytest.fixture(name="client")
 def client_fixture(session: Session) -> TestClient:
     def get_session_override():
         return session
@@ -31,7 +32,7 @@ def client_fixture(session: Session) -> TestClient:
     yield client
     app.dependency_overrides.clear()
 
-@pytest.fixture(name='user', scope='session', autouse=True)
+@pytest.fixture(name='user')
 def registered_user(session: Session) -> User:
     user = User(
         username="registered_username",
@@ -42,7 +43,7 @@ def registered_user(session: Session) -> User:
     session.commit()
     yield user
 
-@pytest.fixture(name='client_logged', scope='session', autouse=True)
+@pytest.fixture(name='client_logged')
 def authenticated_client(user: User, session: Session) -> TestClient:
     def get_session_override():
         return session

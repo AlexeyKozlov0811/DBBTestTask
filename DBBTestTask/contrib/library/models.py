@@ -47,7 +47,6 @@ class BookBase(SQLModel, BookValidators):
     name: str = Field(index=True, unique=True)
     ISBN: str = Field(index=True, unique=True)
     publish_date: date = Field()
-    in_stock: bool = Field(default=True)
 
     genre_id: int = Field(foreign_key="genre.id")
     publisher_id: int = Field(foreign_key="publisher.id")
@@ -68,11 +67,11 @@ class BookBase(SQLModel, BookValidators):
 
 class Book(BookBase, ModelCRUD, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    in_stock: bool = Field(default=True)
     genre: Genre = Relationship(back_populates="books")
     publisher: Publisher = Relationship(back_populates="books")
     author: Author = Relationship(back_populates="books")
     borrowings: list['BookBorrow'] = Relationship(back_populates="book")
-
 
 
 
@@ -87,4 +86,12 @@ class BookBorrowBase(SQLModel):
 class BookBorrow(BookBorrowBase, ModelCRUD, table=True):
     book: 'Book' = Relationship(back_populates="borrowings")
     user: 'User' = Relationship(back_populates="borrowings")
+
+    @property
+    def is_overdue(self):
+        return date.today() > self.date_to_return and self.date_returned in None
+
+    @property
+    def is_returned(self):
+        return self.date_returned is not None
 

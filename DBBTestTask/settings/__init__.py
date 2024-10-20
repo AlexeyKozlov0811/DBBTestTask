@@ -11,3 +11,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # to allow incorrect ISBN for testing
 SKIP_ISBN_CHECKSUM_VALIDATION = True
+
+# user settings
+BORROWING_DAYS = 30

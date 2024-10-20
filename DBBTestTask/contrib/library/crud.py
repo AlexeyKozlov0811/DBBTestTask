@@ -36,7 +36,7 @@ class ModelCRUD:
 
     @classmethod
     def update_obj(cls: type(SQLModel), obj_id: int, data: SQLModel, session: Session = Depends(get_session)):
-        obj_to_update = get_obj_or_404(obj_id, cls, session)
+        obj_to_update = cls.get_obj_or_404(obj_id, cls, session)
 
         obj_data = data.model_dump(exclude_unset=True)
         for key, value in obj_data.items():
@@ -49,7 +49,7 @@ class ModelCRUD:
 
     @classmethod
     def delete_obj(cls: type(SQLModel), obj_id: int, session: Session = Depends(get_session)):
-        obj = get_obj_or_404(obj_id, cls, session)
+        obj = cls.get_obj_or_404(obj_id, cls, session)
 
         session.delete(obj)
         session.commit()
