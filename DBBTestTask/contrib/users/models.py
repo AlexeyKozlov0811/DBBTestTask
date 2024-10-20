@@ -1,7 +1,9 @@
 from datetime import datetime
 
 from pydantic import BaseModel, EmailStr
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
+
+from DBBTestTask.contrib.library.models import BookBorrow
 
 
 class User(SQLModel, table=True):
@@ -13,6 +15,8 @@ class User(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)
+
+    borrowings: list['BookBorrow'] = Relationship(back_populates="user")
 
 
 # Pydantic models

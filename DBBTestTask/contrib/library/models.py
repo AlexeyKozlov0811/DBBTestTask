@@ -2,77 +2,56 @@ from datetime import date
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from DBBTestTask.contrib.library.validators import BookValidators
+from DBBTestTask.contrib.library.crud import ModelCRUD
+from DBBTestTask.contrib.library.validators import (
+    AuthorValidators,
+    BookValidators,
+    PublisherValidators,
+)
 
 
 # Authors models
-class AuthorBase(SQLModel):
+class AuthorBase(SQLModel, AuthorValidators):
     name: str = Field(index=True, unique=True)
     birth_date: date = Field()
 
-class Author(AuthorBase, table=True):
+class Author(AuthorBase, ModelCRUD, table=True):
     id: int | None = Field(default=None, primary_key=True)
     books: list['Book'] = Relationship(back_populates="author")
 
-class AuthorCreate(AuthorBase):
-    pass
 
-class AuthorUpdate(AuthorBase):
-    name: str | None = None
-    birth_date: date | None = None
-    books: list['Book'] | None = None
-
-
-class AuthorRead(AuthorUpdate):
-    id: int
 
 # Genre models
 class GenreBase(SQLModel):
     name: str = Field(index=True, unique=True)
 
-class Genre(GenreBase, table=True):
+class Genre(GenreBase, ModelCRUD, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
     books: list['Book'] = Relationship(back_populates="genre")
 
-class GenreCreate(GenreBase):
-    pass
-
-class GenreUpdate(GenreBase):
-    name: str | None = None
-    books: list['Book'] | None = None
-
-class GenreRead(GenreUpdate):
-    id: int
 
 # Publishers models
-class PublisherBase(SQLModel):
+class PublisherBase(SQLModel, PublisherValidators):
     name: str = Field(index=True, unique=True)
     est_date: date = Field()
 
-class Publisher(PublisherBase, table=True):
+class Publisher(PublisherBase, ModelCRUD, table=True):
     id: int | None = Field(default=None, primary_key=True)
     books: list['Book'] = Relationship(back_populates="publisher")
 
-class PublisherCreate(PublisherBase):
-    pass
 
-class PublisherUpdate(PublisherBase):
-    name: str | None = None
-    books: list['Book'] | None = None
-
-class PublisherRead(PublisherUpdate):
-    id: int
 
 # Books models
 class BookBase(SQLModel, BookValidators):
     name: str = Field(index=True, unique=True)
     ISBN: str = Field(index=True, unique=True)
     publish_date: date = Field()
+    in_stock: bool = Field(default=True)
 
-    genre_id: int | None = Field(default=None, foreign_key="genre.id")
-    publisher_id: int | None = Field(default=None, foreign_key="publisher.id")
-    author_id: int | None = Field(default=None, foreign_key="author.id")
+    genre_id: int = Field(foreign_key="genre.id")
+    publisher_id: int = Field(foreign_key="publisher.id")
+    author_id: int = Field(foreign_key="author.id")
 
     class Config:
         json_schema_extra = {
@@ -87,28 +66,25 @@ class BookBase(SQLModel, BookValidators):
         }
 
 
-class Book(BookBase, table=True):
+class Book(BookBase, ModelCRUD, table=True):
     id: int | None = Field(default=None, primary_key=True)
     genre: Genre = Relationship(back_populates="books")
     publisher: Publisher = Relationship(back_populates="books")
     author: Author = Relationship(back_populates="books")
+    borrowings: list['BookBorrow'] = Relationship(back_populates="book")
 
 
-class BookCreate(BookBase):
-    pass
 
 
-class BookUpdate(BookBase):
-    name: str | None = None
-    ISBN: str | None = None
-    publish_date: date | None = None
-    genre_id: int | None = None
-    publisher_id: int | None = None
-    author_id: int | None = None
+class BookBorrowBase(SQLModel):
+    date_borrowed: date = Field()
+    date_to_return: date = Field()
+    date_returned: date | None = Field()
+    book_id: int = Field(foreign_key="book.id", primary_key=True)
+    user_id: int = Field(foreign_key="user.id", primary_key=True)
 
 
-class BookRead(BookUpdate):
-    id: int
-    genre: Genre | None = None
-    publisher: Publisher | None = None
-    author: Author | None = None
+class BookBorrow(BookBorrowBase, ModelCRUD, table=True):
+    book: 'Book' = Relationship(back_populates="borrowings")
+    user: 'User' = Relationship(back_populates="borrowings")
+

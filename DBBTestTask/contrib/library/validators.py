@@ -6,6 +6,20 @@ from pydantic import field_validator
 from DBBTestTask import settings
 
 
+class AuthorValidators:
+    @field_validator('birth_date')
+    def validate_birth_date(cls, value):
+        if value > date.today():
+            raise ValueError("Birth date can't be in the future")
+        return value
+
+class PublisherValidators:
+    @field_validator('est_date')
+    def validate_est_date(cls, value):
+        if value > date.today():
+            raise ValueError("Establishment date can't be in the future")
+        return value
+
 class BookValidators:
     @field_validator('publish_date')
     def validate_publish_date(cls, value):
