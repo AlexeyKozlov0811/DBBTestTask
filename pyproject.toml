@@ -48,12 +48,16 @@ ignore = [
     "B008", # do not perform function calls in argument defaults
     "D202", # no-blank-line-after-function
     "C901", # complex-structure
+    'B904', # raise without from
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
 # Avoid trying to fix flake8-bugbear (`B`) violations.
 unfixable = ["B"]
+
+[tool.ruff]
+include = ["*.py", "*.toml"]
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
@@ -75,6 +79,10 @@ combine-as-imports = true
     "S106", # don't search hardcoded passwords in tests
     "S107", # don't search hardcoded passwords in tests
     "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+    'B904', # Checks for raise statements in exception handlers that lack a from clause.
+]
+"DBBTestTask/contrib/library/models.py" = [
+    'F821', # Undefined name Due to circular imports of type hints in DBBTestTask/contrib/library/models.py:88
 ]
 
 [tool.coverage.run]

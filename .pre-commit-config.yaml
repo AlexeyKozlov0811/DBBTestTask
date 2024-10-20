@@ -3,7 +3,6 @@
 default_language_version:
   python: python3.12
 
-include: [ "*.py", "*.toml" ]
 default_stages: [ pre-commit ]
 fail_fast: true
 
