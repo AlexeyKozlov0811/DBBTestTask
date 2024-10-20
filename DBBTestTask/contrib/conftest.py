@@ -4,11 +4,13 @@ from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
 from db import get_session
+from DBBTestTask.contrib.users.auth import create_access_token, hash_password
+from DBBTestTask.contrib.users.models import User
 from main import app
 
 
 @pytest.fixture(name="session",scope='session', autouse=True)
-def session_fixture():
+def session_fixture() -> Session:
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
@@ -19,12 +21,34 @@ def session_fixture():
         yield session
 
 @pytest.fixture(name="client",scope='session', autouse=True)
-def client_fixture(session: Session):
+def client_fixture(session: Session) -> TestClient:
     def get_session_override():
         return session
 
     app.dependency_overrides[get_session] = get_session_override
 
     client = TestClient(app)
+    yield client
+    app.dependency_overrides.clear()
+
+@pytest.fixture(name='user', scope='session', autouse=True)
+def registered_user(session: Session) -> User:
+    user = User(
+        username="registered_username",
+        hashed_password=hash_password('test_password'),
+        email="registered@string",
+    )
+    session.add(user)
+    session.commit()
+    yield user
+
+@pytest.fixture(name='client_logged', scope='session', autouse=True)
+def authenticated_client(user: User, session: Session) -> TestClient:
+    def get_session_override():
+        return session
+
+    app.dependency_overrides[get_session] = get_session_override
+
+    client = TestClient(app, headers={'Authorization': f'Bearer {create_access_token(data={"sub": user.username})}'})
     yield client
     app.dependency_overrides.clear()

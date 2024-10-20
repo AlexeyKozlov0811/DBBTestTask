@@ -8,7 +8,7 @@ from starlette.status import (
     HTTP_401_UNAUTHORIZED,
 )
 
-from DBBTestTask.contrib.users.auth import create_access_token, hash_password
+from DBBTestTask.contrib.users.auth import create_access_token
 from DBBTestTask.contrib.users.models import User
 
 
@@ -21,18 +21,7 @@ class TestAuthAPI:
             'me': '/api/users/me',
         }
 
-    @pytest.fixture(scope='class')
-    def registered_user(self, session):
-        user = User(
-            username="registered_username",
-            hashed_password=hash_password('test_password'),
-            email="registered@string",
-        )
-        session.add(user)
-        session.commit()
-        return user
-
-    def test_register_user(self, auth_urls, client, session):
+    def test_register_user(self, auth_urls, session, client):
         username = "test"
         email = "string@string"
 
@@ -50,9 +39,9 @@ class TestAuthAPI:
         assert username == registered_user.username
         assert email == registered_user.email
 
-    def test_register_existing_user(self, auth_urls, client, session, registered_user):
-        username = "test"
-        email = "<EMAIL>"
+    def test_register_existing_user(self, auth_urls, session, client, user):
+        username = user.username
+        email = user.email
 
         resp = client.post(
             auth_urls['register'],
@@ -64,18 +53,28 @@ class TestAuthAPI:
 
         assert resp.status_code == HTTP_400_BAD_REQUEST
 
-    def test_login_user(self, auth_urls, client, session, registered_user):
+    def test_login_user(self, auth_urls, session, client, user):
         resp = client.post(
             auth_urls['login'],
-            data={"grant_type": "password", "username": registered_user.username, "password": 'test_password'})
+            data={"grant_type": "password", "username": user.username, "password": 'test_password'})
 
         data = resp.json()
         assert resp.status_code == HTTP_200_OK
-        assert data['access_token'] == create_access_token(data={"sub": registered_user.username})
+        assert data['access_token'] == create_access_token(data={"sub": user.username})
 
-    def test_login_with_incorrect_credentials(self, auth_urls, client, session, registered_user):
+    def test_login_with_incorrect_credentials(self, auth_urls, session, client):
         resp = client.post(
             auth_urls['login'],
             data={"grant_type": "password", "username": 'wrong_username', "password": 'wrong_password'})
 
+        assert resp.status_code == HTTP_401_UNAUTHORIZED
+
+    def test_protected_endpoint(self, auth_urls, session, client_logged, user):
+        resp = client_logged.get(auth_urls['me'])
+        data = resp.json()
+        assert data['id'] == user.id
+
+    def test_protected_endpoint_without_permission(self, auth_urls, session, client):
+        print(client.headers)
+        resp = client.get(auth_urls['me'])
         assert resp.status_code == HTTP_401_UNAUTHORIZED
