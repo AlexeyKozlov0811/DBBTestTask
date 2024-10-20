@@ -1,55 +1,96 @@
-import re
 from datetime import date
 
-from pydantic import field_validator
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
+
+from DBBTestTask.contrib.library.crud import ModelCRUD
+from DBBTestTask.contrib.library.validators import (
+    AuthorValidators,
+    BookValidators,
+    PublisherValidators,
+)
 
 
-class Books(SQLModel, table=True):
+# Authors models
+class AuthorBase(SQLModel, AuthorValidators):
+    name: str = Field(index=True, unique=True)
+    birth_date: date = Field()
+
+
+class Author(AuthorBase, ModelCRUD, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    books: list["Book"] = Relationship(back_populates="author")
+
+
+# Genre models
+class GenreBase(SQLModel):
+    name: str = Field(index=True, unique=True)
+
+
+class Genre(GenreBase, ModelCRUD, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+    books: list["Book"] = Relationship(back_populates="genre")
+
+
+# Publishers models
+class PublisherBase(SQLModel, PublisherValidators):
+    name: str = Field(index=True, unique=True)
+    est_date: date = Field()
+
+
+class Publisher(PublisherBase, ModelCRUD, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    books: list["Book"] = Relationship(back_populates="publisher")
+
+
+# Books models
+class BookBase(SQLModel, BookValidators):
     name: str = Field(index=True, unique=True)
     ISBN: str = Field(index=True, unique=True)
     publish_date: date = Field()
 
-    @field_validator('publish_date')
-    def validate_publish_date(cls, value):
-        if value > date.today():
-            raise ValueError("Publish date can't be in the future")
-        return value
+    genre_id: int = Field(foreign_key="genre.id")
+    publisher_id: int = Field(foreign_key="publisher.id")
+    author_id: int = Field(foreign_key="author.id")
 
-    @field_validator('ISBN')
-    def validate_publish_date(cls, value):
-        if value > date.today():
-            raise ValueError("Publish date can't be in the future")
-        return value
-
-    @field_validator('ISBN')
-    def validate_isbn(cls, value):
-        if not (cls.is_valid_isbn10(value) or cls.is_valid_isbn13(value)):
-            raise ValueError('Invalid ISBN format. Must be a valid ISBN-10 or ISBN-13.')
-        return value
-
-    @staticmethod
-    def is_valid_isbn10(isbn: str) -> bool:
-        # Match pattern with dashes: X-XXX-XXXXX-X
-        if not re.match(r'^\d{1}-\d{3}-\d{5}-[\dX]$', isbn):
-            return False
-        # Remove dashes and validate checksum
-        isbn = isbn.replace("-", "")
-        total = sum((i + 1) * (10 if x == 'X' else int(x)) for i, x in enumerate(isbn))
-        return total % 11 == 0
-
-    @staticmethod
-    def is_valid_isbn13(isbn: str) -> bool:
-        # Match pattern with dashes: XXX-X-XX-XXXXX-X
-        if not re.match(r'^\d{3}-\d{1}-\d{2}-\d{5}-\d{1}$', isbn):
-            return False
-        # Remove dashes and validate checksum
-        isbn = isbn.replace("-", "")
-        total = sum((1 if i % 2 == 0 else 3) * int(x) for i, x in enumerate(isbn))
-        return total % 10 == 0
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "name": "test book",
+                "ISBN": "1-111-11111-1",
+                "publish_date": "2024-10-18",
+                "genre_id": 0,
+                "publisher_id": 0,
+                "author_id": 0,
+            }
+        }
 
 
-class Authors(SQLModel, table=True):
+class Book(BookBase, ModelCRUD, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(index=True, unique=True)
+    in_stock: bool = Field(default=True)
+    genre: Genre = Relationship(back_populates="books")
+    publisher: Publisher = Relationship(back_populates="books")
+    author: Author = Relationship(back_populates="books")
+    borrowings: list["BookBorrow"] = Relationship(back_populates="book")
+
+
+class BookBorrowBase(SQLModel):
+    date_borrowed: date = Field()
+    date_to_return: date = Field()
+    date_returned: date | None = Field()
+    book_id: int = Field(foreign_key="book.id", primary_key=True)
+    user_id: int = Field(foreign_key="user.id", primary_key=True)
+
+
+class BookBorrow(BookBorrowBase, ModelCRUD, table=True):
+    book: "Book" = Relationship(back_populates="borrowings")
+    user: "User" = Relationship(back_populates="borrowings")
+
+    @property
+    def is_overdue(self):
+        return date.today() > self.date_to_return and self.date_returned in None
+
+    @property
+    def is_returned(self):
+        return self.date_returned is not None
