@@ -16,7 +16,25 @@ Install Python packages
 pipenv install -d
 ```
 
+### Copy the .env file
+
+   ```bash
+   cp .env.example .env
+   ```
+
+### DB set up
+
+SQLite DB can be retrieved from github `database.db` if it's not present, empty db will be created upon starting server
+
 ### Run Local Server
+
 ```bash
-python main.py
+python -m uvicorn main:app
 ```
+
+### Use app
+
+1. Go to the docs page http://127.0.0.1:8000/docs#/
+2. Register a user using endpoint `/api/users/register/`
+3. Log in via **Authorize** button on top of the page using your username and password
+4. Have fun

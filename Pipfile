@@ -10,9 +10,16 @@ python_version = "3.12"
 fastapi = "*"
 uvicorn = { extras = ["standard"], version = "*" }
 sqlmodel = "*"
+python-multipart = "*"
+pyjwt = "*"
+python-dotenv = "*"
+passlib = { extras = ["bcrypt"], version = "*" }
+pydantic = { extras = ["email"], version = "*" }
+alembic = "*"
 
 [dev-packages]
 ruff = "*"
 pre-commit = "*"
 pytest = "*"
 httpx = "*"
+coverage = "*"
