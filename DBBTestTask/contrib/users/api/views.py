@@ -12,7 +12,7 @@ from DBBTestTask.contrib.users.auth import (
     hash_password,
     verify_password,
 )
-from DBBTestTask.contrib.users.models import Token, User, UserCreate, UserData
+from DBBTestTask.contrib.users.models import Token, User, UserCreate, UserRead
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -21,7 +21,6 @@ router = APIRouter(prefix="/users", tags=["Users"])
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)
 ):
-    # TODO: Fix deprecated queries
     db_user = session.query(User).filter(User.username == form_data.username).first()
     if db_user is None or not verify_password(form_data.password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
@@ -59,6 +58,6 @@ async def register_user(user: UserCreate, session: Session = Depends(get_session
     return {"user_id": new_user.id}
 
 
-@router.get("/me", response_model=UserData)
-async def read_current_user(current_user: UserData = Depends(get_current_user)):
-    return UserData.model_validate(current_user)
+@router.get("/me", response_model=UserRead)
+async def read_current_user(current_user: UserRead = Depends(get_current_user)):
+    return UserRead.model_validate(current_user)

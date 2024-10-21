@@ -15,7 +15,7 @@ from DBBTestTask.contrib.library.serializers import (
     BookUpdate,
 )
 from DBBTestTask.contrib.users.auth import get_current_user
-from DBBTestTask.contrib.users.models import UserData
+from DBBTestTask.contrib.users.models import UserRead
 
 router = APIRouter(prefix="/books", tags=["books"])
 
@@ -24,14 +24,16 @@ router = APIRouter(prefix="/books", tags=["books"])
 async def get_books_list(
     offset: int = 0,
     limit: int = Query(default=100, lte=100),
+    sort_by: str = Query(default="name"),
+    sort_order: str = Query(default="asc", regex="^(asc|desc)$"),
     session: Session = Depends(get_session),
 ):
-    return Book.read_objects(offset=offset, limit=limit, session=session)
+    return Book.read_objects(offset=offset, limit=limit, sort_by=sort_by, sort_order=sort_order, session=session)
 
 
 @router.get("/{book_id}", response_model=BookRead)
 async def get_book(book_id: int, session: Session = Depends(get_session)):
-    return Book.read_object(obj_id=book_id, session=session)
+    return Book.get_obj_or_404(obj_id=book_id, session=session)
 
 
 @router.post("", response_model=BookRead)
@@ -53,7 +55,7 @@ async def delete_book(book_id: int, session: Session = Depends(get_session)):
 async def borrow_book(
     book_id: int,
     session: Session = Depends(get_session),
-    current_user: UserData = Depends(get_current_user),
+    current_user: UserRead = Depends(get_current_user),
 ):
     book = Book.get_obj_or_404(obj_id=book_id, session=session)
     if book.in_stock:
@@ -83,7 +85,7 @@ async def borrow_book(
 async def return_book(
     book_id: int,
     session: Session = Depends(get_session),
-    current_user: UserData = Depends(get_current_user),
+    current_user: UserRead = Depends(get_current_user),
 ):
     book = Book.get_obj_or_404(obj_id=book_id, session=session)
     user_active_borrow = list(

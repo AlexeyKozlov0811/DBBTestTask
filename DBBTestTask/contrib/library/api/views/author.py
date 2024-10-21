@@ -24,7 +24,7 @@ async def get_authors_list(
 
 @router.get("/{author_id}", response_model=AuthorRead)
 async def get_author(author_id: int, session: Session = Depends(get_session)):
-    return Author.read_object(obj_id=author_id, session=session)
+    return Author.get_obj_or_404(obj_id=author_id, session=session)
 
 
 @router.post("", response_model=AuthorRead)

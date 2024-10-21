@@ -19,7 +19,7 @@ async def get_publishers_list(
 
 @router.get("/{publisher_id}", response_model=PublisherRead)
 async def get_publisher(publisher_id: int, session: Session = Depends(get_session)):
-    return Publisher.read_object(obj_id=publisher_id, session=session)
+    return Publisher.get_obj_or_404(obj_id=publisher_id, session=session)
 
 
 @router.post("", response_model=PublisherRead)

@@ -19,7 +19,7 @@ async def get_genres_list(
 
 @router.get("/{genre_id}", response_model=GenreRead)
 async def get_genre(genre_id: int, session: Session = Depends(get_session)):
-    return Genre.read_object(obj_id=genre_id, session=session)
+    return Genre.get_obj_or_404(obj_id=genre_id, session=session)
 
 
 @router.post("", response_model=GenreRead)

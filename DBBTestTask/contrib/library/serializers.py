@@ -19,11 +19,11 @@ class PublisherCreate(PublisherBase):
 
 class PublisherUpdate(PublisherBase):
     name: str | None = None
-    books: list[Book] | None = None
 
 
 class PublisherRead(PublisherUpdate):
     id: int
+    books: list[Book] | None = None
 
 
 class GenreCreate(GenreBase):
@@ -32,11 +32,11 @@ class GenreCreate(GenreBase):
 
 class GenreUpdate(GenreBase):
     name: str | None = None
-    books: list[Book] | None = None
 
 
 class GenreRead(GenreUpdate):
     id: int
+    books: list[Book] | None = None
 
 
 class AuthorCreate(AuthorBase):
@@ -46,11 +46,11 @@ class AuthorCreate(AuthorBase):
 class AuthorUpdate(AuthorBase):
     name: str | None = None
     birth_date: date | None = None
-    books: list[Book] | None = None
 
 
 class AuthorRead(AuthorUpdate):
     id: int
+    books: list[Book] | None = None
 
 
 class BookCreate(BookBase):
@@ -86,4 +86,5 @@ class BookBorrowCreate(BookBorrowBase):
 
 
 class BookBorrowRead(BookBorrowCreate):
-    pass
+    is_overdue: bool
+    is_returned: bool

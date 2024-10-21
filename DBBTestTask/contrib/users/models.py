@@ -1,54 +1,51 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
 from DBBTestTask.contrib.library.models import BookBorrow
+from DBBTestTask.contrib.library.serializers import BookBorrowRead
 
 
-class User(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class UserBase(SQLModel):
     username: str = Field(index=True, unique=True, min_length=3, max_length=50)
-    # TODO: enforce validation
     email: EmailStr = Field(index=True, unique=True)
+
+
+class User(UserBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
     hashed_password: str = Field(min_length=60, max_length=128)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)
-
     borrowings: list["BookBorrow"] = Relationship(back_populates="user")
 
 
-# Pydantic models
-class UserCreate(BaseModel):
-    username: str
+class UserCreate(UserBase):
     password: str
-    email: str | None
 
 
-class UserData(BaseModel):
+class UserRead(UserBase):
     id: int | None
     username: str
     email: str | None
     is_active: bool
-
-    class Config:
-        from_attributes = True
+    borrowings: list[BookBorrowRead]
 
 
 class UserInDB(UserCreate):
     hashed_password: str
 
 
-class UserLoginRequest(BaseModel):
+class UserLoginRequest(SQLModel):
     username: str
     password: str
 
 
-class Token(BaseModel):
+class Token(SQLModel):
     access_token: str
     token_type: str
 
 
-class TokenData(BaseModel):
+class TokenData(SQLModel):
     username: str
