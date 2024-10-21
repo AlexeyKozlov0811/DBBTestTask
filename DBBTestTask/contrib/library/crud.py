@@ -41,13 +41,13 @@ class ModelCRUD:
         offset: int = 0,
         limit: int = 20,
         sort_by: str | None = None,
-        sort_order: str = 'asc',
+        sort_order: str = "asc",
         session: Session = Depends(get_session),
     ):
         statement = select(cls).offset(offset).limit(limit)
         if sort_by is not None:
             related_sortable_fields = set(cls.get_sort_related_field().keys())
-            sortable_fields =  related_sortable_fields | cls.get_sort_fields()
+            sortable_fields = related_sortable_fields | cls.get_sort_fields()
 
             if sort_by not in sortable_fields:
                 raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Invalid sort field")

@@ -76,15 +76,15 @@ class Book(BookBase, ModelCRUD, table=True):
 
     @classmethod
     def get_sort_fields(cls):
-        return {'name', 'ISBN', 'publish_date'}
+        return {"name", "ISBN", "publish_date"}
 
     @classmethod
     def get_sort_related_field(cls):
         """sort config format {<field_alias>: (<Model>, <Model field>)}"""
         return {
-            'author_name': (Author, Author.name),
-            'genre_name': (Genre, Genre.name),
-            'publisher_name': (Publisher, Publisher.name),
+            "author_name": (Author, Author.name),
+            "genre_name": (Genre, Genre.name),
+            "publisher_name": (Publisher, Publisher.name),
         }
 
 

@@ -28,7 +28,9 @@ async def get_books_list(
     sort_order: str = Query(default="asc", regex="^(asc|desc)$"),
     session: Session = Depends(get_session),
 ):
-    return Book.read_objects(offset=offset, limit=limit, sort_by=sort_by, sort_order=sort_order, session=session)
+    return Book.read_objects(
+        offset=offset, limit=limit, sort_by=sort_by, sort_order=sort_order, session=session
+    )
 
 
 @router.get("/{book_id}", response_model=BookRead)
