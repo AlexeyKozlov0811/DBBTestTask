@@ -38,7 +38,7 @@ def registered_user(session: Session) -> User:
     user = User(
         username="registered_username",
         hashed_password=hash_password("test_password"),
-        email="registered@string",
+        email="registered@string.com",
     )
     session.add(user)
     session.commit()

@@ -23,11 +23,12 @@ class TestAuthAPI:
 
     def test_register_user(self, auth_urls, session, client):
         username = "test"
-        email = "string@string"
+        email = "string@string.com"
 
         resp = client.post(
             auth_urls["register"], json={"username": username, "password": "string", "email": email}
         )
+        assert resp.status_code == HTTP_201_CREATED
         data = resp.json()
         registered_user = session.exec(select(User).where(User.id == data["user_id"])).first()
 
