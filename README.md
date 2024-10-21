@@ -35,6 +35,7 @@ python -m uvicorn main:app
 ### Use app
 
 1. Go to the docs page http://127.0.0.1:8000/docs#/
-2. Register a user using endpoint `/api/users/register/`
-3. Log in via **Authorize** button on top of the page using your username and password
+2. Register a user using endpoint `/api/users/register/` you can skip this step and log in with default user
+3. Log in via **Authorize** button on top of the page using your username and password <br />
+   default user: **username='string' password='string'**
 4. Have fun
